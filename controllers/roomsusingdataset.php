@@ -183,7 +183,7 @@ class SPODAPI_CTRL_RoomsUsingDataset extends OW_ActionController
         }
 
         $dataset = filter_var($dataset, FILTER_VALIDATE_URL);
-
+$dataset = 'http://dati.lazio.it/catalog/api/action/datastore_search?resource_id=722b6cbd-28d3-4151-ac50-9c4261298168';
         if (!$dataset) {
             return $this->output_error(self::ERR_INVALID_DATASET_URL);
         }
@@ -195,9 +195,6 @@ class SPODAPI_CTRL_RoomsUsingDataset extends OW_ActionController
         $dataset = http_build_url($dataset, [], HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
         die($dataset);
         */
-
-        $commentService = BOL_CommentService::getInstance();
-        $commentDao = BOL_CommentDao::getInstance();
 
         $dataletDao = ODE_BOL_DataletDao::getInstance();
 
@@ -220,10 +217,20 @@ T_END_HEREDOC;
             SPODPUBLIC_BOL_PublicRoomDao::getInstance()->getDtoClassName(),
             array());
 
-        $filter_only_public = function($item) {
-            return "approved" == $item->status && "everybody" == $item->privacy;
-        };
+        $base_route = OW::getRouter()->urlForRoute('spodpublic.main');
 
-        return $this->output_success(array_filter($rooms, $filter_only_public));
+        // Filter and update
+        $result = [];
+        foreach ($rooms as $room) {
+            if ("approved" != $room->status || "everybody" != $room->privacy) {
+                continue;
+            }
+            $obj = (array) $room;
+            $obj['url'] = $base_route . '#!/' . $room->id;
+
+            $result[] = $obj;
+        }
+
+        return $this->output_success($result);
     }
 }
