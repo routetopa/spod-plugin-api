@@ -183,7 +183,6 @@ class SPODAPI_CTRL_RoomsUsingDataset extends OW_ActionController
         }
 
         $dataset = filter_var($dataset, FILTER_VALIDATE_URL);
-$dataset = 'http://dati.lazio.it/catalog/api/action/datastore_search?resource_id=722b6cbd-28d3-4151-ac50-9c4261298168';
         if (!$dataset) {
             return $this->output_error(self::ERR_INVALID_DATASET_URL);
         }
