@@ -163,7 +163,7 @@ class SPODAPI_CTRL_RoomsUsingDataset extends OW_ActionController
         echo json_encode([
             'status' => 'success',
             'result' => $result,
-        ]);
+        ], JSON_UNESCAPED_SLASHES);
         die();
     }
 
