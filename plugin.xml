@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
     <name>SPOD APIs</name>
-    <key>spod_plugin_api</key>
+    <key>spodapi</key>
     <description>SPOD Public APIs</description>
     <author>ISISLab</author>
     <authorEmail>isislab@routetopa.eu</authorEmail>
