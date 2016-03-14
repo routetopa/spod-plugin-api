@@ -13,7 +13,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
     const FIELD_SUFFIX = 'suffix';
     const FIELD_AGGREGATORS = 'aggregators';
 
-    const DATALET_TYPES = [
+    private $DATALET_TYPES = [
         'barchart-datalet',
         'columnchart-datalet',
     ];
@@ -85,7 +85,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
             $this->output_error("User id missing");
         }
 
-        if ( ! in_array( $datalet_type, self::DATALET_TYPES ) ) {
+        if ( ! in_array( $datalet_type, $this->DATALET_TYPES ) ) {
             $this->output_error("{$datalet_type} not supported");
         }
 
