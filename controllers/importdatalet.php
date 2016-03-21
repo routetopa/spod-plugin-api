@@ -14,8 +14,14 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
     const FIELD_AGGREGATORS = 'aggregators';
 
     private $DATALET_TYPES = [
+        'areachart-datalet',
         'barchart-datalet',
         'columnchart-datalet',
+        'datatable-datalet',
+        'heatmap-datalet',
+        'linechart-datalet',
+        'scatterchart-datalet',
+        'treemap-datalet',
     ];
 
     const INPUT_SOURCE = 1; // 1=json_body; 2=urlencoded_body; 3=debug
@@ -85,6 +91,9 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
             $this->output_error("User id missing");
         }
 
+        if ('-datalet' != substr($datalet_type, -strlen('-datalet'))) {
+            $datalet_type .= '-datalet';
+        }
         if ( ! in_array( $datalet_type, $this->DATALET_TYPES ) ) {
             $this->output_error("{$datalet_type} not supported");
         }
