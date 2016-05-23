@@ -96,12 +96,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
             self::FIELD_Y_LABEL => '',
             self::FIELD_SUFFIX => '',
             //self::FIELD_FIELDS => '"result,records,Asset Type","result,records,Estimated Duration in weeks"',
-            self::FIELD_AGGREGATORS => [
-                [
-                    "field" => 'result,records,' . $tmp['vals'][0],
-                    "operation" => $aggregators[ strtolower($tmp['aggregatorName']) ]
-                ],
-            ],
+            self::FIELD_AGGREGATORS => [],
         ];
 
         $fields = $tmp['vals'];
@@ -113,6 +108,11 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
             ];
             $fields[] = $field;
         }
+
+        $data[self::FIELD_AGGREGATORS][] = [
+            "field" => 'result,records,' . $tmp['vals'][0],
+            "operation" => $aggregators[ strtolower($tmp['aggregatorName']) ]
+        ];
 
         $data[ self::FIELD_FIELDS ] = join(",", array_map(function($e) { return "\"result,records,{$e}\""; }, $fields));
 
