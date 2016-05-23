@@ -127,7 +127,8 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
 
         switch (self::INPUT_SOURCE) {
             case 1: // Read JSON
-                $data = json_decode(file_get_contents('php://input'), true);
+                $json = file_get_contents('php://input');
+                $data = $this->parse_tet($json);
                 break;
             case 2: // Read url-encoded
                 $data = $_GET;
