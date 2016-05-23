@@ -85,17 +85,23 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
             */
         ];
 
+        if (!isset($renderers[ strtolower($tmp['rendererName']) ])) {
+            $this->output_error("Datalet type {$tmp['rendererName']} is not supported");
+        }
+
+        if (!isset($aggregators[ strtolower($tmp['aggregatorName']) ])) {
+            $this->output_error("Aggregor {$tmp['aggregatorName']} is not supported");
+        }
+
         $data = [
             self::FIELD_USER_ID => $tmp['email'],
             self::FIELD_DATALET_TYPE => $renderers[ strtolower($tmp['rendererName']) ],
             self::FIELD_DATA_URL => $tmp['dataset'],
             self::FIELD_TITLE => 'New datalet',
             self::FIELD_DESCRIPTION => '',
-
             self::FIELD_X_LABEL => '',
             self::FIELD_Y_LABEL => '',
             self::FIELD_SUFFIX => '',
-            //self::FIELD_FIELDS => '"result,records,Asset Type","result,records,Estimated Duration in weeks"',
             self::FIELD_AGGREGATORS => [],
         ];
 
@@ -170,15 +176,19 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
 
         $user_id = BOL_UserService::getInstance()->findByEmail($user_email)->id;
 
+        if (!$user_email) {
+            $this->output_error("Please login into TET before exporting");
+        }
+
         if (!$user_id) {
-            $this->output_error("User id missing");
+            $this->output_error("User {$user_email} not found in SPOD");
         }
 
         if ('-datalet' != substr($datalet_type, -strlen('-datalet'))) {
             $datalet_type .= '-datalet';
         }
         if ( ! in_array( $datalet_type, $this->DATALET_TYPES ) ) {
-            $this->output_error("{$datalet_type} not supported");
+            $this->output_error("The chart {$datalet_type} is not supported by SPOD");
         }
 
         $params = [
