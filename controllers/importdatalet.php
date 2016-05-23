@@ -98,7 +98,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
             //self::FIELD_FIELDS => '"result,records,Asset Type","result,records,Estimated Duration in weeks"',
             self::FIELD_AGGREGATORS => [
                 [
-                    "field" => $tmp['vals'][0],
+                    "field" => 'result,records,' . $tmp['vals'][0],
                     "operation" => $aggregators[ strtolower($tmp['aggregatorName']) ]
                 ],
             ],
@@ -108,7 +108,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
 
         foreach ($tmp['rows'] as $field) {
             $data[self::FIELD_AGGREGATORS][] = [
-                "field" => $field,
+                "field" => 'result,records,' . $field,
                 "operation" => 'GROUP BY'
             ];
             $fields[] = $field;
@@ -120,7 +120,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
     }
 
     function index() {
-        if ( ! OW::getRequest()->isPost() )
+        if ( self::INPUT_SOURCE <= 2 && ! OW::getRequest()->isPost() )
         {
             $this->output_error("Method not supported");
         }
@@ -134,7 +134,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
                 $data = $_GET;
                 break;
             case 4: // Use Waqar's test data
-                $json = "{ \"email\" : \"webmaster@routetopa.eu\" , \"dataset\" : \"http://vmdatagov01.deri.ie:8080/api/action/datastore_search?resource_id=192e7c93-487c-4e05-b265-0f20afd58ee0\", \"cols\": [], \"rows\": [ \"Asset Type\" ], \"aggregatorName\": \"Sum\", \"vals\": [ \"Final Cost\" ], \"rendererName\": \"Table\" }";
+                $json = "{ \"derivedAttributes\": {}, \"hiddenAttributes\": [], \"menuLimit\": 200, \"cols\": [], \"rows\": [ \"Asset Type\" ], \"vals\": [ \"Final Cost\" ], \"aggregatorName\": \"Sum\", \"rendererName\": \"Table\", \"dataset\": \"http://vmdatagov01.deri.ie:8080/api/action/datastore_search?resource_id=3be469a0-f0f5-4f5c-a1e2-5ed7838ddb12\", \"email\": \"webmaster@routetopa.eu\" } ";
                 $data = $this->parse_tet($json);
                 break;
             case 3: // Use debug data
@@ -149,8 +149,8 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
                     self::FIELD_SUFFIX => '',
                     self::FIELD_FIELDS => '"result,records,Asset Type","result,records,Estimated Duration in weeks"',
                     self::FIELD_AGGREGATORS => [
-                        [ "field" => "Asset Type", "operation" => "GROUP BY" ],
-                        [ "field" => "Estimated Duration in weeks", "operation" => "AVG" ],
+                        [ "field" => "result,records,Asset Type", "operation" => "GROUP BY" ],
+                        [ "field" => "result,records,Estimated Duration in weeks", "operation" => "AVG" ],
                     ],
                 ];
                 break;
