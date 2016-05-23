@@ -113,7 +113,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
             "field" => 'result,records,' . $tmp['vals'][0],
             "operation" => $aggregators[ strtolower($tmp['aggregatorName']) ]
         ];
-        $fields[] = $tmp['vals'];
+        $fields[] = $tmp['vals'][0];
 
         $data[ self::FIELD_FIELDS ] = join(",", array_map(function($e) { return "\"result,records,{$e}\""; }, $fields));
 
