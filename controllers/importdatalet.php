@@ -72,7 +72,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
             'table' => 'datatable-datalet',
             'heatmap' => 'heatmap-datalet',
             'line chart' => 'linechart-datalet',
-            'bar chart' => 'barchart-datalet',
+            'bar chart' => 'columnchart-datalet',
             'stacked bar chart' => 'barchart_stacked-datalet',
             'area chart' => 'areachart-datalet',
             'scatter chart' => 'scatterchart-datalet',
@@ -99,7 +99,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
             self::FIELD_AGGREGATORS => [],
         ];
 
-        $fields = $tmp['vals'];
+        $fields = [];
 
         foreach ($tmp['rows'] as $field) {
             $data[self::FIELD_AGGREGATORS][] = [
@@ -113,6 +113,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
             "field" => 'result,records,' . $tmp['vals'][0],
             "operation" => $aggregators[ strtolower($tmp['aggregatorName']) ]
         ];
+        $fields[] = $tmp['vals'];
 
         $data[ self::FIELD_FIELDS ] = join(",", array_map(function($e) { return "\"result,records,{$e}\""; }, $fields));
 
