@@ -24,7 +24,7 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
         'treemap-datalet',
     ];
 
-    const INPUT_SOURCE = 1; // 1=json_body; 2=urlencoded_body; 3=debug
+    const INPUT_SOURCE = 1; // 1=json_body; 2=urlencoded_body; 3=debug; 4=tet-debug
 
     private function output_success($result) {
         echo json_encode([
@@ -42,6 +42,83 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
         die();
     }
 
+    private function parse_tet($str) {
+        $tmp = json_decode($str, true);
+
+        $aggregators = [
+            'count' => 'COUNT',
+            'sum' => 'SUM',
+            'average' => 'AVG',
+            'minimim' => 'MIN',
+            'maximum' => 'MAX',
+            /*
+            // http://service.routetopa.eu:7480/WebCompDev/COMPONENTS/blob/master/controllets/select-visualization-controllet/select-datalet-inputs.html
+            // Unsupported aggregators:
+            'count unique values' => '',
+            'list unique values' => '',
+            'integer sum' => '',
+            'sum over sum' => '',
+            '80% upper bound' => '',
+            '80% lower bound' => '',
+            'sum as a fraction of total' => '',
+            'sum as a fraction of rows' => '',
+            'sum as a fraction of columns' => '',
+            'count as a fraction of total' => '',
+            'count as a fraction of rows' => '',
+            'count as a fraction of columns' => '',
+            */
+        ];
+        $renderers = [
+            'table' => 'datatable-datalet',
+            'heatmap' => 'heatmap-datalet',
+            'line chart' => 'linechart-datalet',
+            'bar chart' => 'barchart-datalet',
+            'stacked bar chart' => 'barchart_stacked-datalet',
+            'area chart' => 'areachart-datalet',
+            'scatter chart' => 'scatterchart-datalet',
+            'treemap' => 'treemap-datalet',
+            /*
+            // Unsupported renderers:
+            'table barchart' => '',
+            'row heathmap' => '',
+            'col heathmap' => '',
+            */
+        ];
+
+        $data = [
+            self::FIELD_USER_ID => $tmp['email'],
+            self::FIELD_DATALET_TYPE => $renderers[ strtolower($tmp['rendererName']) ],
+            self::FIELD_DATA_URL => $tmp['dataset'],
+            self::FIELD_TITLE => 'New datalet',
+            self::FIELD_DESCRIPTION => '',
+
+            self::FIELD_X_LABEL => '',
+            self::FIELD_Y_LABEL => '',
+            self::FIELD_SUFFIX => '',
+            //self::FIELD_FIELDS => '"result,records,Asset Type","result,records,Estimated Duration in weeks"',
+            self::FIELD_AGGREGATORS => [
+                [
+                    "field" => $tmp['vals'][0],
+                    "operation" => $aggregators[ strtolower($tmp['aggregatorName']) ]
+                ],
+            ],
+        ];
+
+        $fields = $tmp['vals'];
+
+        foreach ($tmp['rows'] as $field) {
+            $data[self::FIELD_AGGREGATORS][] = [
+                "field" => $field,
+                "operation" => 'GROUP BY'
+            ];
+            $fields[] = $field;
+        }
+
+        $data[ self::FIELD_FIELDS ] = join(",", array_map(function($e) { return "\"result,records,{$e}\""; }, $fields));
+
+        return $data;
+    }
+
     function index() {
         if ( ! OW::getRequest()->isPost() )
         {
@@ -54,6 +131,10 @@ class SPODAPI_CTRL_ImportDatalet extends OW_ActionController
                 break;
             case 2: // Read url-encoded
                 $data = $_GET;
+                break;
+            case 4: // Use Waqar's test data
+                $json = "{ \"email\" : \"webmaster@routetopa.eu\" , \"dataset\" : \"http://vmdatagov01.deri.ie:8080/api/action/datastore_search?resource_id=192e7c93-487c-4e05-b265-0f20afd58ee0\", \"cols\": [], \"rows\": [ \"Asset Type\" ], \"aggregatorName\": \"Sum\", \"vals\": [ \"Final Cost\" ], \"rendererName\": \"Table\" }";
+                $data = $this->parse_tet($json);
                 break;
             case 3: // Use debug data
                 $data = [
