@@ -64,8 +64,6 @@ class SPODAPI_CTRL_RoomSummary extends OW_ActionController
             );
         }
 
-        echo '<pre>'; print_r($result);die();
-
         return $this->output_success($result);
     }
 }
