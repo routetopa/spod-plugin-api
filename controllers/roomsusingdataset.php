@@ -221,9 +221,6 @@ T_END_HEREDOC;
         // Filter and update
         $result = [];
         foreach ($rooms as $room) {
-            if ("approved" != $room->status || "everybody" != $room->privacy) {
-                continue;
-            }
             $obj = (array) $room;
             $obj['url'] = $base_route . '#!/' . $room->id;
 
