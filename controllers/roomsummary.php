@@ -34,19 +34,20 @@ class SPODAPI_CTRL_RoomSummary extends OW_ActionController
             return $this->output_error(self::ERR_INVALID_ROOM_ID);
         }
 
-        $public_room = SPODPUBLIC_BOL_Service::getInstance()->getPublicRoomById($room_id);
+        $public_room = SPODAGORA_BOL_Service::getInstance()->getAgoraById($room_id);
         if (!$public_room) {
             return $this->output_error(self::ERR_INVALID_ROOM_ID);
         }
 
-        $comments = BOL_CommentService::getInstance()->findCommentList('spodpublic_topic_entity', $room_id);
+        //$comments = BOL_CommentService::getInstance()->findCommentList('spodpublic_topic_entity', $room_id);
+        $comments = SPODAGORA_BOL_Service::getInstance()->getCommentList($room_id);
 
         $userIds = array();
         foreach ($comments as $comment) {
-            $userIds[$comment->userId] = $comment->userId;
+            $userIds[$comment->ownerId] = $comment->ownerId;
         }
 
-        $users = BOL_UserService::getInstance()->findUserListByIdList($userIds);
+        //$users = BOL_UserService::getInstance()->findUserListByIdList($userIds);
         $userDisplayNames = BOL_UserService::getInstance()->getDisplayNamesForList($userIds);
         $userUrls = BOL_UserService::getInstance()->getUserUrlsForList($userIds);
         $avatarUrls = BOL_AvatarService::getInstance()->getAvatarsUrlList($userIds);
@@ -54,13 +55,13 @@ class SPODAPI_CTRL_RoomSummary extends OW_ActionController
         $result = array();
         foreach ($comments as $comment) {
             $result[] = array(
-                'userId' => $comment->userId,
+                'userId' => $comment->ownerId,
                 //'username' => $users[ $comment->userId ]->username,
-                'userUrl' => $userUrls[ $comment->userId ],
-                'userDisplayName' => $userDisplayNames[ $comment->userId ],
-                'userAvatarUrl' => $avatarUrls[ $comment->userId ],
-                'timestamp' => $comment->createStamp,
-                'message' => $comment->message,
+                'userUrl' => $userUrls[ $comment->ownerId ],
+                'userDisplayName' => $userDisplayNames[ $comment->ownerId ],
+                'userAvatarUrl' => $avatarUrls[ $comment->ownerId ],
+                'timestamp' => $comment->timestamp,
+                'message' => $comment->comment,
             );
         }
 

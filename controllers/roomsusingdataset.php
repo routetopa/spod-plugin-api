@@ -202,10 +202,10 @@ SELECT `rooms`.*
 FROM `%s` AS `datalets`
 RIGHT JOIN `ow_ode_datalet_post` AS `dataletposts`
      ON `datalets`.`id` = `dataletposts`.`dataletId`
-RIGHT JOIN `ow_spod_public_room_comment_sentiment` AS `roomcomments`
-     ON `dataletposts`.`postid` = `roomcomments`.`commentId`
-RIGHT JOIN `ow_spod_public_room` AS `rooms`
-     ON `roomcomments`.`publicRoomId` = `rooms`.`id`
+RIGHT JOIN `ow_spod_agora_room_comment` AS `roomcomments`
+     ON `dataletposts`.`postid` = `roomcomments`.`id`
+RIGHT JOIN `ow_spod_agora_room` AS `rooms`
+     ON `roomcomments`.`entityId` = `rooms`.`id`
 WHERE `params` LIKE '%%%s%%';
 T_END_HEREDOC;
 
@@ -213,16 +213,16 @@ T_END_HEREDOC;
         $query = sprintf($sql, $dataletDao->getTableName(), $dataset);
         $rooms = OW::getDbo()->queryForObjectList(
             $query,
-            SPODPUBLIC_BOL_PublicRoomDao::getInstance()->getDtoClassName(),
+            SPODAGORA_BOL_AgoraRoomDao::getInstance()->getDtoClassName(),
             array());
 
-        $base_route = OW::getRouter()->urlForRoute('spodpublic.main');
+        $base_route = OW::getRouter()->urlForRoute('spodagora.main');
 
         // Filter and update
         $result = [];
         foreach ($rooms as $room) {
             $obj = (array) $room;
-            $obj['url'] = $base_route . '#!/' . $room->id;
+            $obj['url'] = $base_route . '/' . $room->id;
 
             $result[] = $obj;
         }
